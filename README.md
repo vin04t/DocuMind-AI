@@ -1,9 +1,9 @@
 # DocuMind AI
 ### Evidence-Grounded Document Intelligence Platform
 
-[![Build & Tests](https://img.shields.io/badge/tests-10%20passed-emerald)](https://github.com/documind-ai)
-[![Recall@K](https://img.shields.io/badge/Recall%40K-100%25-blue)](https://github.com/documind-ai)
-[![Abstention](https://img.shields.io/badge/Abstention-100%25-indigo)](https://github.com/documind-ai)
+[![Build & Tests](https://img.shields.io/badge/tests-32%20passed-emerald)](https://github.com/vin04t/DocuMind-AI)
+[![Recall@K](https://img.shields.io/badge/Recall%40K-100%25-blue)](https://github.com/vin04t/DocuMind-AI)
+[![Abstention](https://img.shields.io/badge/Abstention-100%25-indigo)](https://github.com/vin04t/DocuMind-AI)
 [![License](https://img.shields.io/badge/license-MIT-slate)](LICENSE)
 
 DocuMind AI is an enterprise document intelligence and research platform engineered for factual precision, verifiable citations, claim-level evidence verification, and cross-document contradiction detection.
@@ -200,10 +200,10 @@ The Next.js frontend is accessible at `http://localhost:3000`.
 
 ## 7. Running Tests & Evaluation
 
-### Backend Unit & Integration Tests
+### Backend Unit & Integration Tests (32 Passed)
 ```bash
 cd documind-ai/backend
-PYTHONPATH=. ./venv/bin/pytest tests/test_backend.py -v
+PYTHONPATH=. ./venv/bin/pytest tests/ -v
 ```
 
 ### Run Benchmark Evaluation
