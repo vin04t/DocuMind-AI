@@ -1,0 +1,227 @@
+{
+  "version": "1.0",
+  "name": "DocuMind AI Benchmark Evaluation Dataset",
+  "description": "22 challenging multi-type evaluation questions across financial, policy, and technical whitepapers",
+  "questions": [
+    {
+      "id": "q01",
+      "type": "direct_factual",
+      "question": "What was Acme Technologies' total revenue in Q3 2024?",
+      "target_documents": ["acme_q3_financial_report.pdf"],
+      "expected_pages": [1],
+      "expected_answer": "$42.5 million",
+      "key_facts": ["$42.5M", "42.5 million"],
+      "is_answerable": true
+    },
+    {
+      "id": "q02",
+      "type": "direct_factual",
+      "question": "When was the CloudScale product line officially launched?",
+      "target_documents": ["acme_q3_financial_report.pdf"],
+      "expected_pages": [2],
+      "expected_answer": "August 15, 2024",
+      "key_facts": ["August 15, 2024"],
+      "is_answerable": true
+    },
+    {
+      "id": "q03",
+      "type": "numerical",
+      "question": "What was the total R&D expenditure across Q3 and Q4 2024 combined?",
+      "target_documents": ["acme_q3_financial_report.pdf", "acme_q4_financial_report.pdf"],
+      "expected_pages": [1, 1],
+      "expected_answer": "$26.4 million ($12.1 million in Q3 plus $14.3 million in Q4)",
+      "key_facts": ["26.4", "12.1", "14.3"],
+      "is_answerable": true
+    },
+    {
+      "id": "q04",
+      "type": "comparison",
+      "question": "How did Acme's enterprise retention rate change between Q3 2024 and Q4 2024?",
+      "target_documents": ["acme_q3_financial_report.pdf", "acme_q4_financial_report.pdf"],
+      "expected_pages": [2, 2],
+      "expected_answer": "The enterprise retention rate decreased from 94.0% in Q3 2024 to 91.5% in Q4 2024 (a decrease of 2.5 percentage points).",
+      "key_facts": ["94%", "91.5%", "decreased"],
+      "is_answerable": true
+    },
+    {
+      "id": "q05",
+      "type": "multi_document",
+      "question": "Compare total headcount at Acme between Q3 2024 and Q4 2024.",
+      "target_documents": ["acme_q3_financial_report.pdf", "acme_q4_financial_report.pdf"],
+      "expected_pages": [1, 1],
+      "expected_answer": "Headcount increased from 480 employees at the end of Q3 2024 to 520 employees at the end of Q4 2024, representing a net addition of 40 employees.",
+      "key_facts": ["480", "520", "40"],
+      "is_answerable": true
+    },
+    {
+      "id": "q06",
+      "type": "multi_passage",
+      "question": "What were the primary drivers for CloudScale ARR growth and what was the ending ARR in Q4 2024?",
+      "target_documents": ["acme_q4_financial_report.pdf"],
+      "expected_pages": [1, 2],
+      "expected_answer": "CloudScale ending ARR reached $22 million in Q4 2024, driven by accelerated enterprise customer migration, expansion of multi-cloud connectors, and new AI workload optimizations.",
+      "key_facts": ["$22 million", "$22M", "enterprise customer migration"],
+      "is_answerable": true
+    },
+    {
+      "id": "q07",
+      "type": "date",
+      "question": "What is the effective date of Acme's Remote Work Policy v2.0?",
+      "target_documents": ["acme_remote_work_policy_2024.pdf"],
+      "expected_pages": [1],
+      "expected_answer": "January 1, 2024",
+      "key_facts": ["January 1, 2024"],
+      "is_answerable": true
+    },
+    {
+      "id": "q08",
+      "type": "comparison",
+      "question": "What are the core working hours in the 2023 policy compared to the 2024 policy?",
+      "target_documents": ["acme_remote_work_policy_2023.pdf", "acme_remote_work_policy_2024.pdf"],
+      "expected_pages": [1, 1],
+      "expected_answer": "Under the 2023 policy, core working hours were 10:00 AM - 4:00 PM EST, whereas under the 2024 policy, core working hours are 9:00 AM - 3:00 PM EST.",
+      "key_facts": ["10:00 AM - 4:00 PM", "9:00 AM - 3:00 PM"],
+      "is_answerable": true
+    },
+    {
+      "id": "q09",
+      "type": "direct_factual",
+      "question": "What is the annual home office stipend allowed under the 2024 remote work policy?",
+      "target_documents": ["acme_remote_work_policy_2024.pdf"],
+      "expected_pages": [2],
+      "expected_answer": "$800 per employee per calendar year.",
+      "key_facts": ["$800", "800"],
+      "is_answerable": true
+    },
+    {
+      "id": "q10",
+      "type": "comparison",
+      "question": "How did the maximum allowable days for international remote work change between the 2023 and 2024 policies?",
+      "target_documents": ["acme_remote_work_policy_2023.pdf", "acme_remote_work_policy_2024.pdf"],
+      "expected_pages": [2, 2],
+      "expected_answer": "International remote work allowance increased from 30 days per calendar year in 2023 to 45 days per calendar year in 2024.",
+      "key_facts": ["30 days", "45 days"],
+      "is_answerable": true
+    },
+    {
+      "id": "q11",
+      "type": "direct_factual",
+      "question": "What is the daily travel reimbursement threshold requiring VP approval under the 2024 policy?",
+      "target_documents": ["acme_remote_work_policy_2024.pdf"],
+      "expected_pages": [2],
+      "expected_answer": "Travel expenses exceeding $650 per day require prior written approval from a Vice President.",
+      "key_facts": ["$650", "VP approval", "Vice President"],
+      "is_answerable": true
+    },
+    {
+      "id": "q12",
+      "type": "direct_factual",
+      "question": "Which dense embedding model and vector dimension are specified in the DocuMind technical whitepaper?",
+      "target_documents": ["documind_ai_technical_whitepaper.pdf"],
+      "expected_pages": [1],
+      "expected_answer": "The platform uses the all-MiniLM-L6-v2 model producing 384-dimensional dense vector embeddings.",
+      "key_facts": ["all-MiniLM-L6-v2", "384"],
+      "is_answerable": true
+    },
+    {
+      "id": "q13",
+      "type": "direct_factual",
+      "question": "What are the default BM25 parameters k1 and b used in DocuMind's keyword retrieval engine?",
+      "target_documents": ["documind_ai_technical_whitepaper.pdf"],
+      "expected_pages": [1],
+      "expected_answer": "BM25 uses k1 = 1.5 and b = 0.75.",
+      "key_facts": ["1.5", "0.75", "k1", "b"],
+      "is_answerable": true
+    },
+    {
+      "id": "q14",
+      "type": "multi_passage",
+      "question": "How does DocuMind fuse rankings from BM25 and vector search, and what is the default RRF constant k?",
+      "target_documents": ["documind_ai_technical_whitepaper.pdf"],
+      "expected_pages": [1, 2],
+      "expected_answer": "DocuMind uses Reciprocal Rank Fusion (RRF) where score = sum(1 / (k + rank_i)), with a default fusion constant k = 60.",
+      "key_facts": ["Reciprocal Rank Fusion", "RRF", "60"],
+      "is_answerable": true
+    },
+    {
+      "id": "q15",
+      "type": "direct_factual",
+      "question": "Which cross-encoder reranker model is recommended in the technical whitepaper for top-K reranking?",
+      "target_documents": ["documind_ai_technical_whitepaper.pdf"],
+      "expected_pages": [2],
+      "expected_answer": "ms-marco-MiniLM-L-6-v2",
+      "key_facts": ["ms-marco-MiniLM-L-6-v2"],
+      "is_answerable": true
+    },
+    {
+      "id": "q16",
+      "type": "numerical",
+      "question": "What was Acme Technologies' full-year 2024 annual revenue?",
+      "target_documents": ["acme_q4_financial_report.pdf"],
+      "expected_pages": [1],
+      "expected_answer": "$175.2 million",
+      "key_facts": ["$175.2M", "175.2 million"],
+      "is_answerable": true
+    },
+    {
+      "id": "q17",
+      "type": "ambiguous",
+      "question": "What is the annual home office stipend?",
+      "target_documents": ["acme_remote_work_policy_2023.pdf", "acme_remote_work_policy_2024.pdf"],
+      "expected_pages": [2, 2],
+      "expected_answer": "The stipend depends on the policy version: under the 2023 policy it was $1,200 per year, but under the updated 2024 policy it was reduced to $800 per year.",
+      "key_facts": ["$1,200", "$800", "2023", "2024"],
+      "is_answerable": true
+    },
+    {
+      "id": "q18",
+      "type": "multi_document",
+      "question": "What was the net income for Acme Technologies in Q3 2024 versus Q4 2024?",
+      "target_documents": ["acme_q3_financial_report.pdf", "acme_q4_financial_report.pdf"],
+      "expected_pages": [1, 1],
+      "expected_answer": "Net income was $8.2 million in Q3 2024 and increased to $9.5 million in Q4 2024.",
+      "key_facts": ["$8.2 million", "$9.5 million"],
+      "is_answerable": true
+    },
+    {
+      "id": "q19",
+      "type": "unanswerable",
+      "question": "What is the projected Q1 2025 revenue guidance for Acme Technologies?",
+      "target_documents": ["acme_q4_financial_report.pdf"],
+      "expected_pages": [],
+      "expected_answer": "The documents do not provide Q1 2025 revenue guidance. The reports only contain historical data through Q4 2024.",
+      "key_facts": ["cannot be established", "not provided", "missing", "deferred"],
+      "is_answerable": false
+    },
+    {
+      "id": "q20",
+      "type": "unanswerable",
+      "question": "What dental insurance benefits does Acme provide to remote employees?",
+      "target_documents": ["acme_remote_work_policy_2024.pdf"],
+      "expected_pages": [],
+      "expected_answer": "The remote work policy does not mention dental or health insurance benefits.",
+      "key_facts": ["not mentioned", "cannot be established", "missing"],
+      "is_answerable": false
+    },
+    {
+      "id": "q21",
+      "type": "unanswerable",
+      "question": "What is the stock ticker symbol for Acme Technologies on NASDAQ?",
+      "target_documents": ["acme_q3_financial_report.pdf", "acme_q4_financial_report.pdf"],
+      "expected_pages": [],
+      "expected_answer": "The ticker symbol is not stated in the provided financial reports.",
+      "key_facts": ["not stated", "cannot be established"],
+      "is_answerable": false
+    },
+    {
+      "id": "q22",
+      "type": "direct_factual",
+      "question": "What distance metric is configured for vector similarity in ChromaDB according to the whitepaper?",
+      "target_documents": ["documind_ai_technical_whitepaper.pdf"],
+      "expected_pages": [2],
+      "expected_answer": "Cosine distance (or cosine similarity).",
+      "key_facts": ["cosine", "cosine distance"],
+      "is_answerable": true
+    }
+  ]
+}
