@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, s
 from fastapi.responses import FileResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, desc
+from app.core.config import settings
 from app.core.database import get_db
 from app.models import Document, DocumentChunk, User
 from app.schemas import DocumentResponse, DocumentDetailResponse
@@ -35,8 +36,10 @@ async def process_document_pipeline(
     if not doc:
         return
 
+    current_stage = "EXTRACTION"
     try:
         # Stage 1: Extraction
+        current_stage = "EXTRACTION"
         doc.status = "EXTRACTING"
         await db.commit()
         await activity_service.log_event(
@@ -50,6 +53,7 @@ async def process_document_pipeline(
         pages = extraction_result["pages"]
 
         # Stage 2: Chunking
+        current_stage = "CHUNKING"
         doc.status = "CHUNKING"
         await db.commit()
         await activity_service.log_event(
@@ -82,6 +86,7 @@ async def process_document_pipeline(
         await db.commit()
 
         # Stage 3: Embedding & Indexing
+        current_stage = "EMBEDDING"
         doc.status = "EMBEDDING"
         await db.commit()
         await activity_service.log_event(
@@ -93,6 +98,7 @@ async def process_document_pipeline(
         chunk_texts = [c["content"] for c in chunks_data]
         embeddings = embedding_service.embed_texts(chunk_texts)
 
+        current_stage = "INDEXING"
         # Clean existing entries from ChromaDB and BM25 to prevent duplicate embeddings on reprocessing
         vector_store.delete_document(doc.id)
         bm25_retriever.remove_document(doc.id)
@@ -122,7 +128,7 @@ async def process_document_pipeline(
 
     except Exception as e:
         doc.status = "FAILED"
-        doc.error_message = str(e)
+        doc.error_message = f"[{current_stage}] {str(e)}"
         duration = (time.time() - start_time) * 1000
         await db.commit()
 
@@ -130,7 +136,7 @@ async def process_document_pipeline(
             db, "FAILURE", "FAILED", user_id=user_id,
             document_id=doc.id, document_name=doc.filename,
             duration_ms=duration,
-            details={"error": str(e)}
+            details={"stage": current_stage, "error": str(e)}
         )
 
 
@@ -145,18 +151,18 @@ async def upload_document(
     Uploads, validates, and processes a PDF file.
     Performs duplicate detection via SHA-256.
     """
-    safe_filename = os.path.basename(file.filename)
-    if not safe_filename.lower().endswith(".pdf"):
+    safe_filename = os.path.basename(file.filename or "")
+    if not safe_filename or not safe_filename.lower().endswith(".pdf"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only PDF documents are supported."
+            detail="Only PDF documents are supported (.pdf extension required)."
         )
 
     content = await file.read()
     if len(content) == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The uploaded file is empty."
+            detail="The uploaded file is empty (0 bytes)."
         )
 
     # Validate file size limit
@@ -180,7 +186,11 @@ async def upload_document(
     dup_res = await db.execute(select(Document).where(Document.file_hash == file_hash))
     existing_doc = dup_res.scalars().first()
     if existing_doc:
-        # Return existing document or reprocess
+        if existing_doc.status == "FAILED":
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Document processing failed during ingestion: {existing_doc.error_message}"
+            )
         return DocumentResponse.model_validate(existing_doc)
 
     # Create new document record
@@ -207,6 +217,12 @@ async def upload_document(
     await process_document_pipeline(doc.id, db, current_user.id)
     await db.refresh(doc)
 
+    if doc.status == "FAILED":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Document processing failed during ingestion: {doc.error_message}"
+        )
+
     return DocumentResponse.model_validate(doc)
 
 
@@ -220,6 +236,8 @@ async def list_documents(
     db: AsyncSession = Depends(get_db)
 ):
     stmt = select(Document).order_by(desc(Document.created_at))
+    if not current_user.is_superuser:
+        stmt = stmt.where((Document.user_id == current_user.id) | (Document.user_id.is_(None)))
     if status_filter and status_filter != "ALL":
         stmt = stmt.where(Document.status == status_filter)
     if collection_id and collection_id != "ALL":
@@ -235,12 +253,19 @@ async def list_documents(
 @router.get("/{document_id}", response_model=DocumentDetailResponse)
 async def get_document(
     document_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     res = await db.execute(select(Document).where(Document.id == document_id))
     doc = res.scalars().first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found.")
+
+    if doc.user_id and doc.user_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: You do not have permission to access this document."
+        )
 
     chunks_res = await db.execute(
         select(DocumentChunk)
@@ -266,11 +291,21 @@ async def get_document(
 
 
 @router.get("/{document_id}/file")
-async def get_document_file(document_id: str, db: AsyncSession = Depends(get_db)):
+async def get_document_file(
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
     res = await db.execute(select(Document).where(Document.id == document_id))
     doc = res.scalars().first()
     if not doc or not os.path.exists(doc.file_path):
         raise HTTPException(status_code=404, detail="Document file not found.")
+
+    if doc.user_id and doc.user_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: You do not have permission to download this document."
+        )
 
     return FileResponse(
         doc.file_path,

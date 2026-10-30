@@ -4,10 +4,36 @@ from rank_bm25 import BM25Okapi
 from app.core.config import settings
 
 
+def stem_word(w: str) -> str:
+    """Stem common plurals and suffixes to ensure query intent matches variations."""
+    if len(w) <= 2:
+        return w
+    if w.endswith("ies") and len(w) > 4:
+        return w[:-3] + "y"
+    if w.endswith("s") and not w.endswith("ss") and len(w) > 3:
+        if w.endswith("es") and not w.endswith("ees"):
+            return w[:-2]
+        return w[:-1]
+    if w.endswith("ing") and len(w) > 5:
+        return w[:-3]
+    if w.endswith("ed") and len(w) > 4:
+        return w[:-2] if not w.endswith("eed") else w[:-1]
+    return w
+
+
 def tokenize(text: str) -> List[str]:
-    """Tokenize and normalize text for BM25."""
+    """
+    Tokenize and normalize text for BM25.
+    Preserves single-character keys (e.g., n, p, w) and applies suffix stemming.
+    """
     clean = re.sub(r'[^\w\s]', ' ', text.lower())
-    return [word for word in clean.split() if len(word) > 1]
+    tokens = []
+    for word in clean.split():
+        if len(word) == 1:
+            tokens.append(word)
+        else:
+            tokens.append(stem_word(word))
+    return tokens
 
 
 class BM25RetrieverService:

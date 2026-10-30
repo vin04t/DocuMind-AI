@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     # For sync operations if needed (like Alembic)
     SYNC_DATABASE_URL: str = os.getenv("SYNC_DATABASE_URL", "sqlite:///./documind.db")
     
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    DEMO_MODE: bool = os.getenv("DEMO_MODE", "true").lower() in ("true", "1", "yes")
+
     # Security & Auth
     SECRET_KEY: str = os.getenv("SECRET_KEY", "documind-super-secret-production-key-change-in-prod-2026")
     ALGORITHM: str = "HS256"
@@ -20,7 +23,7 @@ class Settings(BaseSettings):
     
     # Storage Paths
     STORAGE_DIR: str = os.getenv("STORAGE_DIR", "./storage/pdfs")
-    CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", "./storage/chromadb")
+    CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", "./storage/chroma")
     
     # AI & ML Models
     EMBEDDING_MODEL_NAME: str = os.getenv("EMBEDDING_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")

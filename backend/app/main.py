@@ -71,6 +71,52 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 print(f"[Startup] Conflict detection initial scan: {e}")
 
+        # Always initialize in-memory BM25 index and sync any missing ChromaDB vectors from database chunks
+        from app.models import DocumentChunk
+        from app.services.bm25_retriever import bm25_retriever
+        from app.services.vector_store import vector_store
+        from app.services.embedding import embedding_service
+
+        all_chunks_res = await db.execute(select(DocumentChunk))
+        all_chunks = all_chunks_res.scalars().all()
+        if all_chunks:
+            chunk_dicts = [
+                {
+                    "id": c.id,
+                    "document_id": c.document_id,
+                    "chunk_index": c.chunk_index,
+                    "page_number": c.page_number,
+                    "content": c.content,
+                    "clean_content": c.clean_content,
+                    "token_count": c.token_count
+                }
+                for c in all_chunks
+            ]
+            bm25_retriever.index_chunks(chunk_dicts, append=False)
+
+            existing_chroma_ids = set()
+            try:
+                chroma_data = vector_store.collection.get()
+                existing_chroma_ids = set(chroma_data.get("ids", []))
+            except Exception:
+                pass
+
+            missing_chunks = [c for c in chunk_dicts if c["id"] not in existing_chroma_ids]
+            if missing_chunks:
+                missing_texts = [c["content"] for c in missing_chunks]
+                missing_embeddings = embedding_service.embed_texts(missing_texts)
+                vector_store.add_chunks(missing_chunks, missing_embeddings)
+
+        # Ensure initial conflicts exist if conflicts table is empty
+        from app.models import ConflictRecord
+        conflict_res = await db.execute(select(ConflictRecord))
+        if len(conflict_res.scalars().all()) == 0:
+            try:
+                from app.api.conflicts import run_conflict_detection
+                await run_conflict_detection(db)
+            except Exception as e:
+                print(f"[Startup] Conflict detection initial scan: {e}")
+
     yield
 
     # Shutdown: clean up engine

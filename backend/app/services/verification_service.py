@@ -73,7 +73,9 @@ class VerificationService:
 
         claim_lower = claim.lower()
         claim_numbers = set(re.findall(r'\b\$?\d+(?:\.\d+)?%?(?:m|b|k)?\b', claim_lower))
-        claim_words = set(re.findall(r'\b[a-z]{4,}\b', claim_lower))
+        claim_words = set(re.findall(r'\b[a-z0-9_\+\-]{3,}\b', claim_lower))
+        key_pattern = r'\b(?:ctrl|alt|shift|super|cmd|win|f\d+)(?:[\+\-\/](?:ctrl|alt|shift|super|cmd|win|f\d+|[a-z0-9]))*\b'
+        claim_keys = set(re.findall(key_pattern, claim_lower))
 
         best_match = None
         best_score = -1.0
@@ -84,15 +86,17 @@ class VerificationService:
         for item in evidence_passages:
             passage_text = item.get("content", "")
             passage_lower = passage_text.lower()
-            passage_words = set(re.findall(r'\b[a-z]{4,}\b', passage_lower))
+            passage_words = set(re.findall(r'\b[a-z0-9_\+\-]{3,}\b', passage_lower))
             passage_numbers = set(re.findall(r'\b\$?\d+(?:\.\d+)?%?(?:m|b|k)?\b', passage_lower))
+            passage_keys = set(re.findall(key_pattern, passage_lower))
 
             # Word overlap
             overlap = len(claim_words.intersection(passage_words))
             word_sim = overlap / max(1, len(claim_words))
 
-            # Number checks
+            # Number and key checks
             num_overlap = len(claim_numbers.intersection(passage_numbers))
+            key_overlap = len(claim_keys.intersection(passage_keys))
 
             # Detect possible contradiction: same topic (high word overlap) but different numbers
             if word_sim >= 0.4 and claim_numbers and not num_overlap and passage_numbers:
@@ -100,7 +104,7 @@ class VerificationService:
                 contradicting_passage = item
 
             # Total alignment score
-            score = word_sim + (0.5 if num_overlap > 0 else 0.0)
+            score = word_sim + (0.5 if (num_overlap > 0 or key_overlap > 0) else 0.0)
             if score > best_score:
                 best_score = score
                 best_match = item

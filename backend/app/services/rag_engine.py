@@ -1,4 +1,5 @@
 import time
+import re
 from typing import List, Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -26,7 +27,7 @@ class RAGEngine:
         1. Hybrid retrieval (Dense + Sparse BM25 + RRF)
         2. Context enrichment with document names and page metadata
         3. LLM generation with strict evidence grounding
-        4. Citation mapping
+        4. Citation mapping with deduplication
         5. Claim-level evidence verification
         6. Activity logging
         """
@@ -67,16 +68,45 @@ class RAGEngine:
         answer_text = generation_res["answer"]
         is_unanswerable = generation_res["is_unanswerable"]
 
-        # 3. Citation Mapping
+        # 3. Citation Mapping (with strict deduplication on (document_name, page_number))
         citations_data = []
         if not is_unanswerable:
-            for chunk in enriched_evidence[:4]:
-                # Only cite if relevance is reasonable
-                if chunk.get("confidence_score", 0.0) >= 0.20:
+            seen_doc_pages = set()
+
+            # First, prioritize sources explicitly cited in answer_text
+            cited_matches = re.findall(r'\[Source:\s*([^,\]]+),\s*Page:\s*(\d+)\]', answer_text)
+            for doc_name, page_str in cited_matches:
+                doc_name = doc_name.strip()
+                page_num = int(page_str)
+                key = (doc_name, page_num)
+                if key not in seen_doc_pages:
+                    seen_doc_pages.add(key)
+                    matching_chunk = next(
+                        (c for c in enriched_evidence if c.get("document_name") == doc_name and c.get("page_number") == page_num),
+                        None
+                    )
+                    citations_data.append({
+                        "document_id": matching_chunk.get("document_id") if matching_chunk else None,
+                        "document_name": doc_name,
+                        "page_number": page_num,
+                        "chunk_id": matching_chunk.get("id") if matching_chunk else None,
+                        "snippet": matching_chunk.get("content", "")[:280] if matching_chunk else "",
+                        "confidence_score": matching_chunk.get("confidence_score", 1.0) if matching_chunk else 1.0
+                    })
+
+            # Include additional unique (document_name, page_number) pairs from retrieved evidence up to 4 total
+            for chunk in enriched_evidence:
+                if len(citations_data) >= 4:
+                    break
+                doc_name = chunk.get("document_name")
+                page_num = chunk.get("page_number", 1)
+                key = (doc_name, page_num)
+                if key not in seen_doc_pages and chunk.get("confidence_score", 0.0) >= 0.20:
+                    seen_doc_pages.add(key)
                     citations_data.append({
                         "document_id": chunk.get("document_id"),
-                        "document_name": chunk.get("document_name"),
-                        "page_number": chunk.get("page_number", 1),
+                        "document_name": doc_name,
+                        "page_number": page_num,
                         "chunk_id": chunk.get("id"),
                         "snippet": chunk.get("content", "")[:280],
                         "confidence_score": chunk.get("confidence_score", 1.0)

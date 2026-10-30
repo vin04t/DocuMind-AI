@@ -40,7 +40,7 @@ export HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}"
 export PYTHONPATH="$BACKEND_DIR"
 
 echo "-> Starting Backend on http://127.0.0.1:8000..."
-"$BACKEND_DIR/venv/bin/uvicorn" app.main:app --host 0.0.0.0 --port 8000 --app-dir "$BACKEND_DIR" &
+"$BACKEND_DIR/venv/bin/uvicorn" app.main:app --host 0.0.0.0 --port 8000 --reload --app-dir "$BACKEND_DIR" &
 BACKEND_PID=$!
 
 echo "-> Starting Frontend on http://127.0.0.1:3000..."

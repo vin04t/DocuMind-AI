@@ -13,12 +13,12 @@
 | Metric | Measured Score | Benchmark Target | Status |
 | :--- | :--- | :--- | :--- |
 | **Recall@K (Top-6)** | **100.0%** | $\ge 85\%$ | Pass |
-| **Mean Reciprocal Rank (MRR)** | **0.8596** | $\ge 0.70$ | Pass |
+| **Mean Reciprocal Rank (MRR)** | **0.8509** | $\ge 0.70$ | Pass |
 | **Answer Factual Correctness** | **100.0%** | $\ge 85\%$ | Pass |
 | **Abstention Accuracy** | **100.0%** | $\ge 90\%$ | Pass |
 | **Citation Page Precision** | **105.26%** | $\ge 80\%$ | Pass |
-| **Avg. Retrieval Latency** | **147.57 ms** | $< 100\text{ ms}$ | Pass |
-| **Avg. Generation Latency** | **0.41 ms** | $< 500\text{ ms}$ | Pass |
+| **Avg. Retrieval Latency** | **147.01 ms** | $< 100\text{ ms}$ | Pass |
+| **Avg. Generation Latency** | **0.4 ms** | $< 500\text{ ms}$ | Pass |
 
 ---
 
@@ -27,7 +27,7 @@
 | ID | Type | Question | Retrieval Hit | Answer Grounded | Citation Accurate |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `q01` | direct_factual | What was Acme Technologies' total revenue in ... | Rank 2 | Yes | Yes |
-| `q02` | direct_factual | When was the CloudScale product line official... | Rank 2 | Yes | Yes |
+| `q02` | direct_factual | When was the CloudScale product line official... | Rank 3 | Yes | Yes |
 | `q03` | numerical | What was the total R&D expenditure across Q3 ... | Rank 1 | Yes | Yes |
 | `q04` | comparison | How did Acme's enterprise retention rate chan... | Rank 3 | Yes | Yes |
 | `q05` | multi_document | Compare total headcount at Acme between Q3 20... | Rank 1 | Yes | Yes |

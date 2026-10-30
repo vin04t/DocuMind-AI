@@ -16,7 +16,10 @@ async def list_collections(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    res = await db.execute(select(Collection).order_by(Collection.name))
+    stmt = select(Collection).order_by(Collection.name)
+    if not current_user.is_superuser:
+        stmt = stmt.where((Collection.user_id == current_user.id) | (Collection.user_id.is_(None)))
+    res = await db.execute(stmt)
     collections = res.scalars().all()
 
     result = []
@@ -63,6 +66,12 @@ async def delete_collection(
     col = res.scalars().first()
     if not col:
         raise HTTPException(status_code=404, detail="Collection not found.")
+
+    if col.user_id and col.user_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: You do not have permission to delete this collection."
+        )
 
     await db.delete(col)
     await db.commit()

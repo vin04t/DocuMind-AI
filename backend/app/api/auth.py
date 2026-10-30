@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token, decode_token
 from app.models import User
@@ -19,8 +20,9 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db)
 ) -> User:
     """
-    Returns the authenticated user or falls back to the default active user.
-    Enables frictionless local testing and SaaS authentication.
+    Returns the authenticated user.
+    In development/demo mode, falls back to the default demo user if unauthenticated.
+    In production (or with DEMO_MODE=false), strictly enforces JWT token validation.
     """
     user = None
     if token:
@@ -42,6 +44,14 @@ async def get_current_user(
             )
 
     if not user:
+        # In production or when demo mode is disabled, strictly require authentication
+        if not settings.DEMO_MODE or settings.ENVIRONMENT == "production":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication required. Please log in or provide a valid bearer token.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
         # Fallback to default demo user for frictionless local zero-config evaluation
         res = await db.execute(select(User).where(User.email == DEFAULT_DEMO_EMAIL))
         user = res.scalars().first()

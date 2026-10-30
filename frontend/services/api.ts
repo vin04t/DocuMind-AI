@@ -11,7 +11,10 @@ import {
   ConflictReviewStatus
 } from "../types";
 
-const API_BASE = "/api";
+const rawBackend = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_API_URL : undefined;
+const API_BASE = rawBackend
+  ? (rawBackend.endsWith("/api") ? rawBackend : `${rawBackend.replace(/\/+$/, "")}/api`)
+  : "/api";
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
@@ -63,10 +66,36 @@ export async function uploadDocument(
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: "Upload failed" }));
-    throw new Error(err.detail || "Upload failed");
+    let errorDetail = `Upload failed with HTTP status ${res.status}`;
+    try {
+      const err = await res.json();
+      if (err.detail) {
+        if (typeof err.detail === "string") {
+          errorDetail = err.detail;
+        } else if (Array.isArray(err.detail)) {
+          errorDetail = err.detail.map((e: any) => e.msg || JSON.stringify(e)).join("; ");
+        } else {
+          errorDetail = JSON.stringify(err.detail);
+        }
+      }
+    } catch {
+      try {
+        const text = await res.text();
+        if (text && text.trim().length > 0) {
+          errorDetail = text.length > 250 ? text.slice(0, 250) + "..." : text;
+        }
+      } catch {
+        // use fallback errorDetail
+      }
+    }
+    throw new Error(`[HTTP ${res.status}] ${errorDetail}`);
   }
-  return res.json();
+
+  const doc: DocumentItem = await res.json();
+  if (doc.status === "FAILED") {
+    throw new Error(`[Processing Failed] ${doc.error_message || "Document processing failed during ingestion."}`);
+  }
+  return doc;
 }
 
 export async function fetchDocumentDetail(id: string): Promise<DocumentDetail> {
