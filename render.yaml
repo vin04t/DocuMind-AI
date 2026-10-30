@@ -5,8 +5,8 @@ services:
     env: python
     region: oregon
     plan: standard
-    buildCommand: "./backend/venv/bin/pip install -r backend/requirements.txt"
-    startCommand: "./backend/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    buildCommand: "pip install --upgrade pip && pip install -r backend/requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend"
     healthCheckPath: /health
     autoDeploy: true
     envVars:

@@ -27,7 +27,7 @@ export const ActivityWorkspace: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
-  const loadActivities = async () => {
+  const loadActivities = React.useCallback(async () => {
     setLoading(true);
     try {
       const data = await fetchActivities(eventTypeFilter, statusFilter);
@@ -37,11 +37,11 @@ export const ActivityWorkspace: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventTypeFilter, statusFilter]);
 
   useEffect(() => {
     loadActivities();
-  }, [eventTypeFilter, statusFilter]);
+  }, [loadActivities]);
 
   const toggleRow = (id: string) => {
     setExpandedRowId(prev => (prev === id ? null : id));

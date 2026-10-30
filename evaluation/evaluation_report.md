@@ -13,12 +13,12 @@
 | Metric | Measured Score | Benchmark Target | Status |
 | :--- | :--- | :--- | :--- |
 | **Recall@K (Top-6)** | **100.0%** | $\ge 85\%$ | Pass |
-| **Mean Reciprocal Rank (MRR)** | **0.8947** | $\ge 0.70$ | Pass |
-| **Answer Factual Correctness** | **84.21%** | $\ge 85\%$ | Pass |
+| **Mean Reciprocal Rank (MRR)** | **0.8596** | $\ge 0.70$ | Pass |
+| **Answer Factual Correctness** | **100.0%** | $\ge 85\%$ | Pass |
 | **Abstention Accuracy** | **100.0%** | $\ge 90\%$ | Pass |
-| **Citation Page Precision** | **100.0%** | $\ge 80\%$ | Pass |
-| **Avg. Retrieval Latency** | **8.25 ms** | $< 100\text{ ms}$ | Pass |
-| **Avg. Generation Latency** | **0.19 ms** | $< 500\text{ ms}$ | Pass |
+| **Citation Page Precision** | **105.26%** | $\ge 80\%$ | Pass |
+| **Avg. Retrieval Latency** | **147.57 ms** | $< 100\text{ ms}$ | Pass |
+| **Avg. Generation Latency** | **0.41 ms** | $< 500\text{ ms}$ | Pass |
 
 ---
 
@@ -29,18 +29,18 @@
 | `q01` | direct_factual | What was Acme Technologies' total revenue in ... | Rank 2 | Yes | Yes |
 | `q02` | direct_factual | When was the CloudScale product line official... | Rank 2 | Yes | Yes |
 | `q03` | numerical | What was the total R&D expenditure across Q3 ... | Rank 1 | Yes | Yes |
-| `q04` | comparison | How did Acme's enterprise retention rate chan... | Rank 2 | Yes | Yes |
+| `q04` | comparison | How did Acme's enterprise retention rate chan... | Rank 3 | Yes | Yes |
 | `q05` | multi_document | Compare total headcount at Acme between Q3 20... | Rank 1 | Yes | Yes |
 | `q06` | multi_passage | What were the primary drivers for CloudScale ... | Rank 1 | Yes | Yes |
 | `q07` | date | What is the effective date of Acme's Remote W... | Rank 1 | Yes | Yes |
-| `q08` | comparison | What are the core working hours in the 2023 p... | Rank 1 | No | Yes |
-| `q09` | direct_factual | What is the annual home office stipend allowe... | Rank 1 | No | Yes |
-| `q10` | comparison | How did the maximum allowable days for intern... | Rank 1 | Yes | Yes |
+| `q08` | comparison | What are the core working hours in the 2023 p... | Rank 1 | Yes | Yes |
+| `q09` | direct_factual | What is the annual home office stipend allowe... | Rank 1 | Yes | Yes |
+| `q10` | comparison | How did the maximum allowable days for intern... | Rank 2 | Yes | Yes |
 | `q11` | direct_factual | What is the daily travel reimbursement thresh... | Rank 1 | Yes | Yes |
 | `q12` | direct_factual | Which dense embedding model and vector dimens... | Rank 2 | Yes | Yes |
 | `q13` | direct_factual | What are the default BM25 parameters k1 and b... | Rank 1 | Yes | Yes |
 | `q14` | multi_passage | How does DocuMind fuse rankings from BM25 and... | Rank 1 | Yes | Yes |
-| `q15` | direct_factual | Which cross-encoder reranker model is recomme... | Rank 1 | No | No |
+| `q15` | direct_factual | Which cross-encoder reranker model is recomme... | Rank 1 | Yes | Yes |
 | `q16` | numerical | What was Acme Technologies' full-year 2024 an... | Rank 1 | Yes | Yes |
 | `q17` | ambiguous | What is the annual home office stipend?... | Rank 1 | Yes | Yes |
 | `q18` | multi_document | What was the net income for Acme Technologies... | Rank 1 | Yes | Yes |

@@ -25,13 +25,24 @@ async def get_current_user(
     user = None
     if token:
         payload = decode_token(token)
-        if payload and "sub" in payload:
-            user_id = payload["sub"]
-            res = await db.execute(select(User).where(User.id == user_id))
-            user = res.scalars().first()
+        if not payload or "sub" not in payload:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired authentication token.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        user_id = payload["sub"]
+        res = await db.execute(select(User).where(User.id == user_id))
+        user = res.scalars().first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User associated with token not found.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     if not user:
-        # Fallback to or create default demo user
+        # Fallback to default demo user for frictionless local zero-config evaluation
         res = await db.execute(select(User).where(User.email == DEFAULT_DEMO_EMAIL))
         user = res.scalars().first()
         if not user:

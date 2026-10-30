@@ -85,9 +85,11 @@ app = FastAPI(
 )
 
 # CORS Middleware
+origins = [o for o in settings.CORS_ORIGINS if o and "*" not in o]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins if origins else ["*"],
+    allow_origin_regex=r"https://.*\.vercel\.app" if any("vercel.app" in o for o in settings.CORS_ORIGINS) else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

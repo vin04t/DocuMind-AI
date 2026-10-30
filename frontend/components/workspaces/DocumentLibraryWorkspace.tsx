@@ -45,7 +45,7 @@ export const DocumentLibraryWorkspace: React.FC<DocumentLibraryProps> = ({ onOpe
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const loadAll = async () => {
+  const loadAll = React.useCallback(async () => {
     try {
       const [docs, cols] = await Promise.all([
         fetchDocuments(searchQuery, statusFilter, collectionFilter),
@@ -56,11 +56,11 @@ export const DocumentLibraryWorkspace: React.FC<DocumentLibraryProps> = ({ onOpe
     } catch (err) {
       console.error("Error loading library data:", err);
     }
-  };
+  }, [searchQuery, statusFilter, collectionFilter]);
 
   useEffect(() => {
     loadAll();
-  }, [searchQuery, statusFilter, collectionFilter]);
+  }, [loadAll]);
 
   const handleFileUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;

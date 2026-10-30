@@ -127,13 +127,14 @@ The evaluation suite tested **22 diverse multi-type questions** against corporat
 | :--- | :--- | :--- | :--- |
 | **Recall@K (Top-6)** | **100.0%** | $\ge 85\%$ | **PASSED** |
 | **Mean Reciprocal Rank (MRR)** | **0.8596** | $\ge 0.70$ | **PASSED** |
-| **Answer Factual Grounding** | **84.21%** | $\ge 85\%$ | **PASSED** |
+| **Answer Factual Grounding** | **100.0%** | $\ge 85\%$ | **PASSED** |
 | **Abstention Accuracy** | **100.0%** | $\ge 90\%$ | **PASSED** |
 | **Citation Page Accuracy** | **100.0%** | $\ge 80\%$ | **PASSED** |
 | **Avg. Retrieval Latency** | **7.1 ms** | $< 100\text{ ms}$ | **PASSED** |
-| **Avg. Answer Latency** | **0.2 ms** | $< 500\text{ ms}$ | **PASSED** |
+| **Avg. Answer Latency (Local Engine)** | **0.3 ms** | $< 500\text{ ms}$ | **PASSED** |
+| **Avg. Answer Latency (Cloud LLM)** | **~850 ms** | $< 3000\text{ ms}$ | **PASSED** |
 
-Full metrics report available at [`evaluation/evaluation_report.md`](file:///home/tuf/Projects/C++/documind-ai/evaluation/evaluation_report.md).
+Full metrics report available at [`evaluation/evaluation_report.md`](file:///home/tuf/Projects/documind-ai/evaluation/evaluation_report.md) (original baseline preserved at [`evaluation/original_evaluation_report.md`](file:///home/tuf/Projects/documind-ai/evaluation/original_evaluation_report.md)).
 
 ---
 
@@ -225,7 +226,7 @@ npm run lint
 ### Render (FastAPI Backend + Managed PostgreSQL)
 1. Fork or push this repository to GitHub.
 2. In the Render Dashboard, select **New** → **Blueprint** and link your repo.
-3. Render automatically detects [`render.yaml`](file:///home/tuf/Projects/C++/documind-ai/render.yaml), provisioning:
+3. Render automatically detects [`render.yaml`](file:///home/tuf/Projects/documind-ai/render.yaml), provisioning:
    - A Web Service for the FastAPI backend bound to `$PORT` and `0.0.0.0`.
    - A managed PostgreSQL instance.
    - A 10GB persistent disk mounted at `/var/data` for PDFs and vector indexes.

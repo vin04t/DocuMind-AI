@@ -3,12 +3,12 @@
   "answerable_questions": 19,
   "unanswerable_questions": 3,
   "recall_at_k_percentage": 100.0,
-  "mean_reciprocal_rank_mrr": 0.8947,
-  "answer_correctness_percentage": 84.21,
+  "mean_reciprocal_rank_mrr": 0.8596,
+  "answer_correctness_percentage": 100.0,
   "abstention_accuracy_percentage": 100.0,
-  "citation_accuracy_percentage": 100.0,
-  "average_retrieval_latency_ms": 8.25,
-  "average_answer_latency_ms": 0.19,
+  "citation_accuracy_percentage": 105.26,
+  "average_retrieval_latency_ms": 147.57,
+  "average_answer_latency_ms": 0.41,
   "results": [
     {
       "id": "q01",
@@ -19,8 +19,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 8.62,
-      "answer_latency_ms": 0.44,
+      "retrieval_latency_ms": 3090.59,
+      "answer_latency_ms": 1.46,
       "claims_verified": 3
     },
     {
@@ -32,8 +32,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 6.71,
-      "answer_latency_ms": 0.19,
+      "retrieval_latency_ms": 6.62,
+      "answer_latency_ms": 0.35,
       "claims_verified": 3
     },
     {
@@ -45,8 +45,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 6.83,
-      "answer_latency_ms": 0.2,
+      "retrieval_latency_ms": 7.16,
+      "answer_latency_ms": 0.54,
       "claims_verified": 3
     },
     {
@@ -54,12 +54,12 @@
       "type": "comparison",
       "question": "How did Acme's enterprise retention rate change between Q3 2024 and Q4 2024?",
       "is_answerable": true,
-      "first_hit_rank": 2,
+      "first_hit_rank": 3,
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.25,
-      "answer_latency_ms": 0.23,
+      "retrieval_latency_ms": 6.58,
+      "answer_latency_ms": 0.56,
       "claims_verified": 3
     },
     {
@@ -71,8 +71,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 16.26,
-      "answer_latency_ms": 0.23,
+      "retrieval_latency_ms": 7.59,
+      "answer_latency_ms": 0.39,
       "claims_verified": 3
     },
     {
@@ -84,8 +84,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 11.05,
-      "answer_latency_ms": 0.23,
+      "retrieval_latency_ms": 7.12,
+      "answer_latency_ms": 0.45,
       "claims_verified": 3
     },
     {
@@ -97,8 +97,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.53,
-      "answer_latency_ms": 0.19,
+      "retrieval_latency_ms": 6.56,
+      "answer_latency_ms": 0.58,
       "claims_verified": 3
     },
     {
@@ -107,11 +107,11 @@
       "question": "What are the core working hours in the 2023 policy compared to the 2024 policy?",
       "is_answerable": true,
       "first_hit_rank": 1,
-      "answer_matched": false,
+      "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 6.95,
-      "answer_latency_ms": 0.21,
+      "retrieval_latency_ms": 6.49,
+      "answer_latency_ms": 0.2,
       "claims_verified": 3
     },
     {
@@ -120,11 +120,11 @@
       "question": "What is the annual home office stipend allowed under the 2024 remote work policy?",
       "is_answerable": true,
       "first_hit_rank": 1,
-      "answer_matched": false,
+      "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 6.8,
-      "answer_latency_ms": 0.2,
+      "retrieval_latency_ms": 6.25,
+      "answer_latency_ms": 0.24,
       "claims_verified": 3
     },
     {
@@ -132,12 +132,12 @@
       "type": "comparison",
       "question": "How did the maximum allowable days for international remote work change between the 2023 and 2024 policies?",
       "is_answerable": true,
-      "first_hit_rank": 1,
+      "first_hit_rank": 2,
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.12,
-      "answer_latency_ms": 0.19,
+      "retrieval_latency_ms": 6.65,
+      "answer_latency_ms": 0.23,
       "claims_verified": 3
     },
     {
@@ -149,8 +149,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.41,
-      "answer_latency_ms": 0.19,
+      "retrieval_latency_ms": 6.3,
+      "answer_latency_ms": 0.35,
       "claims_verified": 3
     },
     {
@@ -162,8 +162,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.13,
-      "answer_latency_ms": 0.2,
+      "retrieval_latency_ms": 7.41,
+      "answer_latency_ms": 0.31,
       "claims_verified": 3
     },
     {
@@ -175,8 +175,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.45,
-      "answer_latency_ms": 0.2,
+      "retrieval_latency_ms": 7.24,
+      "answer_latency_ms": 0.54,
       "claims_verified": 3
     },
     {
@@ -188,8 +188,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.31,
-      "answer_latency_ms": 0.19,
+      "retrieval_latency_ms": 7.1,
+      "answer_latency_ms": 0.53,
       "claims_verified": 3
     },
     {
@@ -198,12 +198,12 @@
       "question": "Which cross-encoder reranker model is recommended in the technical whitepaper for top-K reranking?",
       "is_answerable": true,
       "first_hit_rank": 1,
-      "answer_matched": false,
-      "citation_correct": false,
-      "is_unanswerable_pred": true,
-      "retrieval_latency_ms": 16.58,
-      "answer_latency_ms": 0.03,
-      "claims_verified": 0
+      "answer_matched": true,
+      "citation_correct": true,
+      "is_unanswerable_pred": false,
+      "retrieval_latency_ms": 6.98,
+      "answer_latency_ms": 0.2,
+      "claims_verified": 3
     },
     {
       "id": "q16",
@@ -214,8 +214,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 9.62,
-      "answer_latency_ms": 0.21,
+      "retrieval_latency_ms": 6.27,
+      "answer_latency_ms": 0.23,
       "claims_verified": 3
     },
     {
@@ -227,8 +227,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 6.63,
-      "answer_latency_ms": 0.18,
+      "retrieval_latency_ms": 6.02,
+      "answer_latency_ms": 0.2,
       "claims_verified": 3
     },
     {
@@ -240,8 +240,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 6.97,
-      "answer_latency_ms": 0.21,
+      "retrieval_latency_ms": 16.65,
+      "answer_latency_ms": 1.0,
       "claims_verified": 3
     },
     {
@@ -253,8 +253,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 7.1,
-      "answer_latency_ms": 0.2,
+      "retrieval_latency_ms": 10.25,
+      "answer_latency_ms": 0.34,
       "claims_verified": 3
     },
     {
@@ -266,7 +266,7 @@
       "answer_matched": true,
       "citation_correct": false,
       "is_unanswerable_pred": true,
-      "retrieval_latency_ms": 6.73,
+      "retrieval_latency_ms": 7.59,
       "answer_latency_ms": 0.03,
       "claims_verified": 0
     },
@@ -279,7 +279,7 @@
       "answer_matched": true,
       "citation_correct": false,
       "is_unanswerable_pred": true,
-      "retrieval_latency_ms": 6.64,
+      "retrieval_latency_ms": 6.58,
       "answer_latency_ms": 0.03,
       "claims_verified": 0
     },
@@ -292,8 +292,8 @@
       "answer_matched": true,
       "citation_correct": true,
       "is_unanswerable_pred": false,
-      "retrieval_latency_ms": 6.87,
-      "answer_latency_ms": 0.2,
+      "retrieval_latency_ms": 6.57,
+      "answer_latency_ms": 0.23,
       "claims_verified": 3
     }
   ]

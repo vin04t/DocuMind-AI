@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -56,7 +56,7 @@ async def get_analytics_summary(db: AsyncSession = Depends(get_db)):
     # 6. Volume trends (Last 7 days)
     volume_points = []
     latency_points = []
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     for day_offset in range(6, -1, -1):
         target_date = (now - timedelta(days=day_offset)).strftime("%b %d")
         # Count queries on that date

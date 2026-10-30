@@ -28,7 +28,7 @@ export const VerificationWorkspace: React.FC = () => {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<VerificationClaimItem | null>(null);
 
-  const loadClaims = async () => {
+  const loadClaims = React.useCallback(async () => {
     setLoading(true);
     try {
       const data = await fetchVerifiedClaims(statusFilter);
@@ -38,11 +38,11 @@ export const VerificationWorkspace: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter]);
 
   useEffect(() => {
     loadClaims();
-  }, [statusFilter]);
+  }, [loadClaims]);
 
   const handleTestClaim = async (e: React.FormEvent) => {
     e.preventDefault();

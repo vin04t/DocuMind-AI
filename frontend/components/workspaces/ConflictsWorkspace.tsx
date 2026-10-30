@@ -25,7 +25,7 @@ export const ConflictsWorkspace: React.FC = () => {
   const [editingNotesId, setEditingNotesId] = useState<string | null>(null);
   const [notesInput, setNotesInput] = useState("");
 
-  const loadConflicts = async () => {
+  const loadConflicts = React.useCallback(async () => {
     setLoading(true);
     try {
       const data = await fetchConflicts(statusFilter);
@@ -35,11 +35,11 @@ export const ConflictsWorkspace: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter]);
 
   useEffect(() => {
     loadConflicts();
-  }, [statusFilter]);
+  }, [loadConflicts]);
 
   const handleRunScan = async () => {
     setScanning(true);

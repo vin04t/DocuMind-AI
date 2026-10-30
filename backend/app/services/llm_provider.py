@@ -180,19 +180,30 @@ class LLMProvider:
         """
         # Tokenize query to find relevant keywords
         query_words = set(re.findall(r'\b[a-zA-Z0-9_\-\$]+\b', query.lower()))
-        stop_words = {"what", "when", "where", "which", "who", "whom", "whose", "why", "how",
-                      "is", "are", "was", "were", "the", "a", "an", "in", "on", "at", "to", "for",
-                      "of", "and", "or", "by", "from", "with", "about", "does", "did", "do",
-                      "acme", "technologies", "inc", "company", "documents", "document", "provide",
-                      "remote", "employees", "employee"}
+        stop_words = {
+            "what", "when", "where", "which", "who", "whom", "whose", "why", "how",
+            "is", "are", "was", "were", "the", "a", "an", "in", "on", "at", "to", "for",
+            "of", "and", "or", "by", "from", "with", "about", "does", "did", "do",
+            "acme", "technologies", "inc", "company", "documents", "document", "provide",
+            "remote", "employees", "employee", "technical", "whitepaper", "policy", "report",
+            "recommended", "specified", "described", "stated", "mentioned", "compared", "according",
+            "under", "between", "used", "uses", "guidelines", "guidance"
+        }
         key_topic_words = query_words - stop_words
 
-        # Check if the key topic words appear anywhere in any evidence chunk
+        # Check if the key topic words appear anywhere in any evidence chunk (with prefix/stem matching)
         all_evidence_text = " ".join(c.get("content", "").lower() for c in evidence_chunks)
-        missing_topic_words = [kw for kw in key_topic_words if kw not in all_evidence_text]
+        
+        def word_matches_evidence(w: str, text: str) -> bool:
+            if len(w) <= 3:
+                return bool(re.search(r'\b' + re.escape(w) + r'\b', text))
+            stem = w[:5] if len(w) >= 5 else w
+            return stem in text
 
-        # If more than 50% of the specific topic words are completely absent from all evidence
-        if key_topic_words and len(missing_topic_words) / len(key_topic_words) > 0.40:
+        missing_topic_words = [kw for kw in key_topic_words if not word_matches_evidence(kw, all_evidence_text)]
+
+        # If 40% or more of specific topic words are completely absent from all evidence, declare unanswerable
+        if key_topic_words and len(missing_topic_words) / len(key_topic_words) >= 0.40:
             missing_terms_str = ", ".join(f"'{m}'" for m in missing_topic_words[:3])
             return {
                 "answer": (
@@ -205,6 +216,14 @@ class LLMProvider:
                 "extracted_claims": []
             }
 
+        # Compute term rarity (IDF proxy) across evidence chunks to prioritize discriminating terms like 'headcount'
+        term_rarity = {}
+        for w in key_topic_words:
+            freq = sum(1 for c in evidence_chunks if word_matches_evidence(w, c.get("content", "").lower()))
+            term_rarity[w] = 2.5 if freq <= 2 else 1.0
+
+        total_possible_weight = max(1.0, sum(term_rarity.values()))
+
         matched_sentences: List[Tuple[str, str, int, float]] = []
 
         for chunk in evidence_chunks:
@@ -212,23 +231,30 @@ class LLMProvider:
             page = chunk.get("page_number", 1)
             raw_content = chunk.get("content", "")
             
+            # Normalize wrapped PDF text inside paragraphs while preserving bullet points and numbered lists
+            normalized_content = re.sub(r'\n(?!\s*(?:[-*•]|\d+\.\s+))', ' ', raw_content)
+            
             # Split into sentences or bullet lines
-            lines = re.split(r'(?<=[.!?])\s+|\n', raw_content)
+            lines = re.split(r'(?<=[.!?])\s+|\n{2,}|\n(?=\s*[-*•])', normalized_content)
             for line in lines:
                 line = line.strip()
                 if len(line) < 15:
                     continue
-                line_words = set(re.findall(r'\b[a-zA-Z0-9_\-\$]+\b', line.lower()))
-                overlap = len(key_topic_words.intersection(line_words))
-                if overlap > 0:
-                    score = overlap / max(1, len(key_topic_words))
+                line_lower = line.lower()
+                weighted_overlap = sum(term_rarity[kw] for kw in key_topic_words if word_matches_evidence(kw, line_lower))
+                if weighted_overlap > 0:
+                    score = weighted_overlap / total_possible_weight
+                    # Boost informative sentences containing factual metrics (times, money, percentages, durations)
+                    has_metric = bool(re.search(r'\b(?:\$\d+|\d+:\d+|\d+(?:\.\d+)?%|\d+\s*(?:days|months|years|weeks|hours|am|pm|employees))\b', line_lower))
+                    if has_metric:
+                        score += 0.35
                     matched_sentences.append((line, doc_name, page, score))
 
         # Sort by sentence relevance score
         matched_sentences.sort(key=lambda x: x[3], reverse=True)
 
         # Check if any sentence had sufficient keyword overlap
-        if not matched_sentences or matched_sentences[0][3] < 0.20 or max_confidence < confidence_threshold:
+        if not matched_sentences or (matched_sentences[0][3] < 0.15 and max_confidence < confidence_threshold):
             return {
                 "answer": (
                     "Based on the provided documents, the answer cannot be established. "

@@ -93,6 +93,10 @@ async def process_document_pipeline(
         chunk_texts = [c["content"] for c in chunks_data]
         embeddings = embedding_service.embed_texts(chunk_texts)
 
+        # Clean existing entries from ChromaDB and BM25 to prevent duplicate embeddings on reprocessing
+        vector_store.delete_document(doc.id)
+        bm25_retriever.remove_document(doc.id)
+
         # Add to ChromaDB vector store
         vector_store.add_chunks(chunks=chunks_data, embeddings=embeddings)
 
@@ -141,7 +145,8 @@ async def upload_document(
     Uploads, validates, and processes a PDF file.
     Performs duplicate detection via SHA-256.
     """
-    if not file.filename.lower().endswith(".pdf"):
+    safe_filename = os.path.basename(file.filename)
+    if not safe_filename.lower().endswith(".pdf"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only PDF documents are supported."
@@ -154,7 +159,22 @@ async def upload_document(
             detail="The uploaded file is empty."
         )
 
-    file_path, file_hash, file_size = storage_service.save_file(file.filename, content)
+    # Validate file size limit
+    max_bytes = settings.MAX_FILE_SIZE_MB * 1024 * 1024
+    if len(content) > max_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File exceeds maximum allowed size of {settings.MAX_FILE_SIZE_MB}MB."
+        )
+
+    # Validate PDF magic header
+    if not content.startswith(b"%PDF-"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid PDF format: File is missing the standard '%PDF-' binary header."
+        )
+
+    file_path, file_hash, file_size = storage_service.save_file(safe_filename, content)
 
     # Check for duplicate document
     dup_res = await db.execute(select(Document).where(Document.file_hash == file_hash))
@@ -270,6 +290,12 @@ async def delete_document(
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found.")
 
+    if doc.user_id and doc.user_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: You do not have permission to delete this document."
+        )
+
     # Remove from ChromaDB vector store
     vector_store.delete_document(document_id)
     # Remove from BM25 index
@@ -299,6 +325,12 @@ async def reprocess_document(
     doc = res.scalars().first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found.")
+
+    if doc.user_id and doc.user_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: You do not have permission to reprocess this document."
+        )
 
     await process_document_pipeline(document_id, db, current_user.id)
     await db.refresh(doc)
