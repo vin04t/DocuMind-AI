@@ -4,7 +4,7 @@ services:
     name: documind-ai-backend
     env: python
     region: oregon
-    plan: standard
+    plan: starter
     buildCommand: "pip install --upgrade pip && pip install -r backend/requirements.txt"
     startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend"
     healthCheckPath: /health
@@ -44,6 +44,6 @@ services:
 databases:
   # Managed PostgreSQL Database on Render
   - name: documind-postgres
-    plan: basic
+    plan: free
     databaseName: documind
     user: documind_admin
