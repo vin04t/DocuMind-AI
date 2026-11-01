@@ -13,11 +13,11 @@ class LLMProvider:
 
     def get_active_provider_name(self) -> str:
         if settings.LLM_PROVIDER == "gemini" and self.gemini_key:
-            return "Google Gemini (gemini-1.5-flash)"
+            return "Google Gemini (gemini-3.8-flash)"
         elif settings.LLM_PROVIDER == "openai" and self.openai_key:
             return "OpenAI (gpt-4o-mini)"
         elif self.gemini_key:
-            return "Google Gemini (gemini-1.5-flash)"
+            return "Google Gemini (gemini-3.8-flash)"
         elif self.openai_key:
             return "OpenAI (gpt-4o-mini)"
         else:
@@ -104,7 +104,7 @@ class LLMProvider:
 
         prompt = f"{system_prompt}\n\nDOCUMENT PASSAGES:\n{context}\n\nUSER QUESTION: {query}\n\nANSWER:"
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={self.gemini_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/emini-3.8-flash-flash:generateContent?key={self.gemini_key}"
         payload = {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"temperature": 0.2, "maxOutputTokens": 800}
@@ -119,7 +119,7 @@ class LLMProvider:
                 return {
                     "answer": text,
                     "is_unanswerable": is_unanswerable,
-                    "provider": "Google Gemini (gemini-1.5-flash)",
+                    "provider": "Google Gemini (emini-3.8-flash-flash)",
                     "extracted_claims": self._extract_claims_from_text(text)
                 }
         return None
